@@ -2,72 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Video</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sora', sans-serif;
+            background-color: #f8f9fa;
+            margin: 20px;
+        }
+        .container {
+            margin-top: 20px;
+            max-width: 600px;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Adicionar Video</h2>
-
-<form>
-    <label for="code">Código:</label><br>
-    <input type="text" id="code" name="code" value=""><br>
-
-    <label for="title">Título:</label><br>
-    <input type="text" id="title" name="title" value=""><br>
-
-    <label for="description">Descripción:</label><br>
-    <input type="text" id="description" name="description" value=""><br>
-
-    <label for="duration">Duración (en minutos):</label><br>
-    <input type="number" id="duration" name="duration" step="0.1" value=""><br><br>
-
-    <input type="button" value="Guardar" class="btn btn-primary" onclick="add();">
-</form>
-
-<a href="../index.html" class="link-secondary">Volver al inicio</a>
-
-</body>
-</html>
+<div class="container">
+    <h2 class="text-center mb-4">Adicionar Video</h2>
+    <form id="videoForm">
+        <div class="mb-3">
+            <label for="code" class="form-label">Código</label>
+            <input type="text" class="form-control" id="code" placeholder="Ingrese el código">
+        </div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Título</label>
+            <input type="text" class="form-control" id="title" placeholder="Ingrese el título">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Descripción</label>
+            <textarea class="form-control" id="description" rows="3" placeholder="Ingrese la descripción"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="duration" class="form-label">Duración (min)</label>
+            <input type="number" class="form-control" id="duration" placeholder="Ingrese la duración">
+        </div>
+        <button type="button" class="btn btn-primary w-100" onclick="add()">Guardar</button>
+    </form>
+    <div class="text-center mt-4">
+        <a href="../index.html" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+</div>
 
 <script>
     function add() {
-        var xmlhttp = new XMLHttpRequest(); // Nueva instancia de XMLHttpRequest
+        var xmlhttp = new XMLHttpRequest();
         xmlhttp.open("POST", "http://localhost:8080/videos", true);
-
         xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-        // Obtener los valores de los campos del formulario
-        var code = document.getElementById("code").value;
-        var title = document.getElementById("title").value;
-        var description = document.getElementById("description").value;
-        var duration = document.getElementById("duration").value;
-
-        // Crear objeto JSON con los valores del formulario
         var newVideo = {
-            "codigo": code,
-            "titulo": title,
-            "descripcion": description,
-            "duracion": parseFloat(duration) // Asegurarse de que la duración sea un número
+            "codigo": document.getElementById("code").value,
+            "titulo": document.getElementById("title").value,
+            "descripcion": document.getElementById("description").value,
+            "duracion": parseFloat(document.getElementById("duration").value)
         };
 
-        console.log("Adding video: " + JSON.stringify(newVideo));
+        console.log("Adding video:", newVideo);
 
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState === XMLHttpRequest.DONE) {
-                if (xmlhttp.status === 200 || xmlhttp.status === 201) {
-                    alert("Video guardado exitosamente");
-                    // Limpiar los campos del formulario
-                    document.getElementById("code").value = "";
-                    document.getElementById("title").value = "";
-                    document.getElementById("description").value = "";
-                    document.getElementById("duration").value = "";
+                if (xmlhttp.status === 201) {
+                    alert("Video agregado con éxito.");
+                    document.getElementById("videoForm").reset();
                 } else {
-                    alert("Error al guardar el video: " + xmlhttp.responseText);
+                    alert("Error al agregar el video.");
                 }
             }
         };
-
-        // Enviar los datos al backend como JSON
         xmlhttp.send(JSON.stringify(newVideo));
     }
 </script>
+</body>
+</html>
