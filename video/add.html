@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Video</title>
+</head>
+<body>
+
+<h2>Adicionar Video</h2>
+
+<form>
+    <label for="code">Código:</label><br>
+    <input type="text" id="code" name="code" value=""><br>
+
+    <label for="title">Título:</label><br>
+    <input type="text" id="title" name="title" value=""><br>
+
+    <label for="description">Descripción:</label><br>
+    <input type="text" id="description" name="description" value=""><br>
+
+    <label for="duration">Duración (en minutos):</label><br>
+    <input type="number" id="duration" name="duration" step="0.1" value=""><br><br>
+
+    <input type="button" value="Guardar" class="btn btn-primary" onclick="add();">
+</form>
+
+<a href="../index.html" class="link-secondary">Volver al inicio</a>
+
+</body>
+</html>
+
+<script>
+    function add() {
+        var xmlhttp = new XMLHttpRequest(); // Nueva instancia de XMLHttpRequest
+        xmlhttp.open("POST", "http://localhost:8080/videos", true);
+
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        // Obtener los valores de los campos del formulario
+        var code = document.getElementById("code").value;
+        var title = document.getElementById("title").value;
+        var description = document.getElementById("description").value;
+        var duration = document.getElementById("duration").value;
+
+        // Crear objeto JSON con los valores del formulario
+        var newVideo = {
+            "codigo": code,
+            "titulo": title,
+            "descripcion": description,
+            "duracion": parseFloat(duration) // Asegurarse de que la duración sea un número
+        };
+
+        console.log("Adding video: " + JSON.stringify(newVideo));
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+                if (xmlhttp.status === 200 || xmlhttp.status === 201) {
+                    alert("Video guardado exitosamente");
+                    // Limpiar los campos del formulario
+                    document.getElementById("code").value = "";
+                    document.getElementById("title").value = "";
+                    document.getElementById("description").value = "";
+                    document.getElementById("duration").value = "";
+                } else {
+                    alert("Error al guardar el video: " + xmlhttp.responseText);
+                }
+            }
+        };
+
+        // Enviar los datos al backend como JSON
+        xmlhttp.send(JSON.stringify(newVideo));
+    }
+</script>
