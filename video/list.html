@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Videos</title>
+</head>
+<body>
+<h1>Videos</h1>
+
+<!-- Tabla donde se listarán los videos -->
+<table id="videos_table" border="1">
+    <thead>
+    <tr>
+        <th>Código</th>
+        <th>Título</th>
+        <th>Descripción</th>
+        <th>Duración</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Las filas se agregarán dinámicamente aquí -->
+    </tbody>
+</table>
+
+<!-- Enlace para regresar a la página de inicio -->
+<a href="../index.html">Inicio</a>
+
+<script>
+    // Llama a la función para obtener y listar todos los videos
+    find_all_videos();
+
+    function find_all_videos() {
+        console.log("Listing all videos:");
+
+        // Crea una solicitud HTTP
+        var xhttp = new XMLHttpRequest();
+
+        // Configura la solicitud para el endpoint del backend
+        xhttp.open('GET', 'http://localhost:8080/videos', true);
+
+        // Manejador de eventos para la respuesta del servidor
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState === XMLHttpRequest.DONE) {
+                var status = xhttp.status;
+                if (status === 0 || (status >= 200 && status < 400)) { // Si la solicitud fue exitosa
+                    var json = JSON.parse(xhttp.responseText);
+                    createTable(json, "videos_table");
+                } else {
+                    console.error("Error al obtener los videos:", status);
+                }
+            }
+        };
+
+        // Envía la solicitud
+        xhttp.send();
+    }
+
+    function createTable(json, table) {
+        var tableBody = document.getElementById(table).querySelector("tbody");
+
+        // Elimina las filas existentes en la tabla (si las hay)
+        while (tableBody.firstChild) {
+            tableBody.removeChild(tableBody.firstChild);
+        }
+
+        // Llena la tabla con los datos del JSON
+        json.forEach((row) => {
+            var tr = document.createElement("tr");
+
+            Object.values(row).forEach((cell) => {
+                var td = document.createElement("td");
+                td.textContent = cell;
+                tr.appendChild(td);
+            });
+
+            tableBody.appendChild(tr);
+        });
+    }
+</script>
+</body>
+</html>
